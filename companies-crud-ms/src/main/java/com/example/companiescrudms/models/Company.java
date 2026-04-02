@@ -19,7 +19,7 @@ public class Company {
     private String founder;
     private String logo;
     private LocalDate foundation_date;
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<WebSite> webSites;
 
@@ -39,6 +39,15 @@ public class Company {
         this.founder = founder;
         this.logo = logo;
         this.foundation_date = foundation_date;
+    }
+
+    public Company(Long id, String name, String founder, String logo, LocalDate foundation_date, List<WebSite> webSites) {
+        this.id = id;
+        this.name = name;
+        this.founder = founder;
+        this.logo = logo;
+        this.foundation_date = foundation_date;
+        this.webSites = webSites;
     }
 
     public Long getId() {

@@ -1,6 +1,7 @@
 package com.example.companiescrudms.controllers;
 
 import com.example.companiescrudms.models.dto.companie.CreateCompanyDTO;
+import com.example.companiescrudms.models.dto.companie.UpdateCompanyDTO;
 import com.example.companiescrudms.services.interfaces.ICompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,15 @@ public class CompanyController {
     @GetMapping("/{idCompany}")
     public ResponseEntity<?> getCompany(@PathVariable Long idCompany) {
         return ResponseEntity.status(HttpStatus.OK).body(iCompanyService.findById(idCompany));
+    }
+
+    @DeleteMapping("/{idCompany}")
+    public ResponseEntity<?> deleteCompany(@PathVariable Long idCompany) {
+        return ResponseEntity.status(HttpStatus.OK).body(iCompanyService.delete(idCompany));
+    }
+
+    @PutMapping("")
+    public ResponseEntity<?> updateCompany(@Valid @RequestBody UpdateCompanyDTO updateCompanyDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(iCompanyService.update(updateCompanyDTO));
     }
 }

@@ -55,4 +55,11 @@ public class GlobalExceptionHandler {
                 iExceptionService.generateExcetionMessage("Ocurrio un error en la busqueda del recurso", ex.getMessage())
         );
     }
+
+    @ExceptionHandler(UpdateEntityException.class)
+    public ResponseEntity<?> handleUpdateEntityException(UpdateEntityException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                iExceptionService.generateExcetionMessage("Ocurrio un error en la actualización del recuros", ex.getMessage())
+        );
+    }
 }

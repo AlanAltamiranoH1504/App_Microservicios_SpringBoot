@@ -1,17 +1,17 @@
 package com.example.companiescrudms.models.dto.companie;
 
-import com.example.companiescrudms.models.dto.website.CreateWebsiteDTO;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-public class CreateCompanyDTO {
+public class UpdateCompanyDTO  {
+    @NotNull(message = "El id de la compañia es requerido")
+    @Positive(message = "El id de la compañia no es valido")
+    public Long idCompany;
+
     @NotBlank(message = "El nombre es requerido")
     @Length(max = 32, message = "El nombre no puede ser mayor a 32 caracteres")
     private String name;
@@ -27,9 +27,13 @@ public class CreateCompanyDTO {
     @NotNull(message = "La fecha de fundacion es requerida")
     private LocalDate foundation_date;
 
-    @NotEmpty(message = "Los websites son requeridos")
-    @Valid
-    private List<CreateWebsiteDTO> websites = new ArrayList<>();
+    public Long getIdCompany() {
+        return idCompany;
+    }
+
+    public void setIdCompany(Long idCompany) {
+        this.idCompany = idCompany;
+    }
 
     public String getName() {
         return name;
@@ -61,13 +65,5 @@ public class CreateCompanyDTO {
 
     public void setFoundation_date(LocalDate foundation_date) {
         this.foundation_date = foundation_date;
-    }
-
-    public List<CreateWebsiteDTO> getWebsites() {
-        return websites;
-    }
-
-    public void setWebsites(List<CreateWebsiteDTO> websites) {
-        this.websites = websites;
     }
 }
