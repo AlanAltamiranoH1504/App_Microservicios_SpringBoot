@@ -1,25 +1,26 @@
 spring:
-  datasource:
-    username: ${spring.datasource.username}
-    url: ${spring.datasource.url}
-    password: ${spring.datasource.password}
   application:
-    name: companies-crud-ms
+    name: report-ms
   profiles:
     default: default
   config:
     import: "optional:configserver:http://localhost:7777"
 server:
   servlet:
-    context-path: /
-#    companies-crud
-  port: 0
+    context-path: /report-ms
+  port: 7070
 eureka:
   instance:
     instance-id: "${spring.application.name}:${random.value}"
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-
+logging:
+  level:
+    com.example.reportms.repositories: DEBUG
+    feign: DEBUG
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
