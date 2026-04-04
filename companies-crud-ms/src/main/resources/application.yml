@@ -1,17 +1,18 @@
 spring:
-  jackson:
-    time-zone: America/Mexico_City
   datasource:
-    username: root
-    url: jdbc:postgresql://localhost:5431/companies
-    password: admin
+    username: ${spring.datasource.username}
+    url: ${spring.datasource.url}
+    password: ${spring.datasource.password}
   application:
     name: companies-crud-ms
+  profiles:
+    default: default
+  config:
+    import: "optional:configserver:http://localhost:7777"
 server:
   servlet:
     context-path: /companies-crud
-  port: 0
-
+  port: 8080
 eureka:
   instance:
     instance-id: "${spring.application.name}:${random.value}"
