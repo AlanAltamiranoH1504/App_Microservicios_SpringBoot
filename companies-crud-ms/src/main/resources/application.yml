@@ -11,7 +11,7 @@ spring:
     import: "optional:configserver:http://localhost:7777"
 server:
   servlet:
-    context-path: /
+    context-path: /companies-crud
 #    companies-crud
   port: 0
 eureka:

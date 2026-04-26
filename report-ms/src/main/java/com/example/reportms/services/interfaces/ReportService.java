@@ -1,27 +1,60 @@
 package com.example.reportms.services.interfaces;
 
+import com.example.reportms.helpers.ReportHelper;
+import com.example.reportms.models.Company;
+import com.example.reportms.models.WebSite;
+import com.example.reportms.models.dto.company.CreateCompanyDTO;
+import com.example.reportms.models.dto.company.website.CreateWebsiteDTO;
 import com.example.reportms.repositories.ICompaniesRepository;
 import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 @Service
 public class ReportService implements IReportService {
     @Autowired
     private ICompaniesRepository iCompaniesRepository;
+    @Autowired
+    private ReportHelper reportHelper;
 
     @Override
     public String makeReport(Long idCompany) {
-        return iCompaniesRepository.getByIdCompany(idCompany).orElseThrow().getName();
+        Company company = iCompaniesRepository.getByIdCompany(idCompany).orElseThrow();
+        return reportHelper.readTemplate(company);
     }
 
     @Override
-    public String saveReport(Long idCompany) {
-        return "";
+    public String saveReport(String nameReport) {
+        List<String> template = reportHelper.getPlaceholdersFromTemplate(nameReport);
+        String[] webSites = template.get(3).split(",");
+        List<CreateWebsiteDTO> websiteDTOS = Arrays.stream(webSites)
+                .map(String::trim)
+                .map(String::toUpperCase)
+                .map(webSite -> {
+                    return new CreateWebsiteDTO(webSite, "Description", "SERVICES");
+                }).toList();
+
+        iCompaniesRepository.postByName(new CreateCompanyDTO(
+                template.get(0),
+                template.get(2),
+                "Logo prueba",
+                LocalDate.parse(template.get(1)),
+                websiteDTOS
+        ));
+        return "Checar en base de datos";
     }
 
     @Override
-    public void deleteReport(Long idCompany) {
-
+    public void deleteReport(String nameReport) {
+        List<Company> companies = iCompaniesRepository.getCompanies();
+        companies.stream()
+                .filter(company -> company.getName().equals(nameReport))
+                .findFirst()
+                .ifPresent(company -> iCompaniesRepository.deleteCompanyById(company.getId()));
     }
 }

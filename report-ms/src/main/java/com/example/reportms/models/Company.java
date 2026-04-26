@@ -1,6 +1,7 @@
 package com.example.reportms.models;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Company {
@@ -9,7 +10,7 @@ public class Company {
     private String founder;
     private String logo;
     private LocalDate foundation_date;
-    private List<WebSite> webSites;
+    private List<WebSite> webSites = new ArrayList<>();
 
     public Company() {
     }

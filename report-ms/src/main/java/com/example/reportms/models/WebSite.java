@@ -61,5 +61,12 @@ public class WebSite {
         this.company = company;
     }
 
-
+    @Override
+    public String toString() {
+        return "WebSite{" +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
