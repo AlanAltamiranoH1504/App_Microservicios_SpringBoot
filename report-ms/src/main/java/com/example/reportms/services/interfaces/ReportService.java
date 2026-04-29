@@ -5,9 +5,12 @@ import com.example.reportms.models.Company;
 import com.example.reportms.models.WebSite;
 import com.example.reportms.models.dto.company.CreateCompanyDTO;
 import com.example.reportms.models.dto.company.website.CreateWebsiteDTO;
+import com.example.reportms.repositories.CompaniesFallbackRepository;
 import com.example.reportms.repositories.ICompaniesRepository;
 import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,11 +24,20 @@ public class ReportService implements IReportService {
     private ICompaniesRepository iCompaniesRepository;
     @Autowired
     private ReportHelper reportHelper;
+    @Autowired
+    private CompaniesFallbackRepository companiesFallbackRepository;
+    @Autowired
+    private Resilience4JCircuitBreakerFactory circuitBreakerFactory;
 
     @Override
     public String makeReport(Long idCompany) {
-        Company company = iCompaniesRepository.getByIdCompany(idCompany).orElseThrow();
-        return reportHelper.readTemplate(company);
+        var circuitBreaker = circuitBreakerFactory.create("companies-circuit-breaker");
+        return circuitBreaker.run(
+                () -> this.makeReportMain(idCompany),
+                throwable -> this.makeReportFallback(idCompany)
+        );
+//        Company company = iCompaniesRepository.getByIdCompany(idCompany).orElseThrow();
+//        return reportHelper.readTemplate(company);
     }
 
     @Override
@@ -56,5 +68,16 @@ public class ReportService implements IReportService {
                 .filter(company -> company.getName().equals(nameReport))
                 .findFirst()
                 .ifPresent(company -> iCompaniesRepository.deleteCompanyById(company.getId()));
+    }
+
+    // ! METODOS DE CIRCUIT BREAKER
+    private String makeReportMain(Long idCompany) {
+        Company company = iCompaniesRepository.getByIdCompany(idCompany).orElseThrow();
+        return reportHelper.readTemplate(company);
+    }
+
+    private String makeReportFallback(Long idCompany) {
+        Company company = companiesFallbackRepository.getCompanyFallback(idCompany);
+        return reportHelper.readTemplate(company);
     }
 }
